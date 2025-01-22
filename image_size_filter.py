@@ -40,12 +40,17 @@ def filter_images_by_aspect_ratio(input_dir:str, output_dir:str, aspect_ratio:tu
                     print(f"Copied: {filename}")
         except Exception as e:
             print(f"Skipped: {filename}, Error: {e}")
+    print("<----------------->|Completed|<----------------->")
 
 if __name__ == "__main__":
     wallpaper = "D:/games/WallPaper"
     wallpaper_mobile = "D:/games/WallPaper/mobile"
     wallpaper_mihoyo = "D:/games/WallPaper/MiHoYo"
+    wallpaper_output = "D:/projects/Genshin_BG_Downloader/output"
 
     wallpaper_16_9 = "D:/games/WallPaper/wallpaper_16_9"
 
-    filter_images_by_aspect_ratio(wallpaper_mobile, wallpaper_16_9, (16, 9))
+    filter_images_by_aspect_ratio(wallpaper_output, wallpaper_mihoyo, (16, 9))
+    filter_images_by_aspect_ratio(wallpaper_mihoyo, wallpaper_16_9, (16, 9))
+    filter_images_by_aspect_ratio(wallpaper, wallpaper_16_9, (16, 9))
+

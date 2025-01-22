@@ -6,19 +6,19 @@ from PIL import Image
 
 BASE_DIR = os.path.dirname(__file__)
 
-def get_img_name_from_url(img_url:str):
+def get_img_name_from_url(img_url:str) -> str:
     url = img_url.split("/")
     return url[-1]
 
 # Image download history
-def read_img_download_history()->list[str]:
+def read_img_download_history() -> list[str]:
     img_downloads = []
     with open('download_history.json', 'r') as f:
         data = json.load(f)
         img_downloads = data.get("IMG_DOWNLOADS")
     return img_downloads
 
-def update_img_download_history(img_downloads:list[str]):
+def update_img_download_history(img_downloads:list[str]) -> None:
     with open('download_history.json', 'r+') as f:
         data = json.load(f)
 
@@ -34,7 +34,7 @@ def update_img_download_history(img_downloads:list[str]):
         f.truncate()
 
 # Image file methods
-def get_webp_files(directory: str|None = None):
+def get_webp_files(directory: str|None = None) -> list[str]:
     """
     Returns a list of all .webp file paths in the given directory.
     
@@ -43,7 +43,7 @@ def get_webp_files(directory: str|None = None):
     """
     if not directory: directory = os.path.join(BASE_DIR, 'output')
     # List to store .webp file paths
-    webp_files = []
+    webp_files:list[str] = []
     
     # Loop through all files in the directory
     for root, dirs, files in os.walk(directory):
@@ -55,7 +55,7 @@ def get_webp_files(directory: str|None = None):
     
     return webp_files
 
-def convert_webp_to_jpg(webp_path: str):
+def convert_webp_to_jpg(webp_path: str) -> None:
     """
     Convert a .webp image to .jpg with the same name.
     
@@ -79,14 +79,14 @@ def convert_webp_to_jpg(webp_path: str):
     except Exception as e:
         print(f"Error: {e}")
 
-def exists_jpg(webp_filename: str):
+def exists_jpg(webp_filename: str) -> bool:
     return os.path.isfile(webp_filename) and webp_filename.lower().endswith('.jpg')
 
-def convert_filename_to_dotjpg(webp_filename:str):
+def convert_filename_to_dotjpg(webp_filename:str) -> str:
     return os.path.splitext(webp_filename)[0] + '.jpg'
 
 # Download images(wallpapers)
-def download_img(img_url:str, output:str|None=None):
+def download_img(img_url:str, output:str|None=None) -> bool:
     download_success = False
     if not output: output = os.path.join(BASE_DIR, 'output')
     img_downloads = read_img_download_history()
@@ -108,7 +108,7 @@ def download_img(img_url:str, output:str|None=None):
     print("-----")
     return download_success
 
-def download_wallpapers(count:int, resolution:list[int, int]):
+def download_wallpapers(count:int, resolution:list[int, int]) -> None:
     """
     Downloads wallpaper images for genshin
     Parameters:
@@ -149,7 +149,7 @@ def download_wallpapers(count:int, resolution:list[int, int]):
             traceback.print_exc()
             hasMore = False
 
-def get_hoyo_launcher_bg():
+def get_hoyo_launcher_bg() -> None:
     url1 = "https://sg-hyp-api.hoyoverse.com/hyp/hyp-connect/api/getGames?launcher_id=VYTpXlbWo8&language=en-us"
     try:
         data = httpx.get(url1).json()
@@ -174,8 +174,7 @@ def get_hoyo_launcher_bg():
     except Exception as e:
         traceback.print_exc()
 
-
-if __name__ == "__main__":
+def main() -> None:
     print(BASE_DIR)
     # 16:9 => 1920x1080, 2560x1440
     download_wallpapers(10, [2560, 1440])
@@ -185,9 +184,6 @@ if __name__ == "__main__":
         if not exists_jpg(convert_filename_to_dotjpg(webp)):
             convert_webp_to_jpg(webp)
 
-    # download_list = [
-    #     "https://fastcdn.hoyoverse.com/mi18n/hk4e_global/m20240919hy3a2wv5z4/upload/147dc91ecef4228acd468a7735ef0097_1481687738078891782.png",
-    #     "https://act-webstatic.hoyoverse.com/puzzle/hk4e/pz_rvZjm6sh7A/resource/puzzle/2024/09/14/6376d7300ba4088a4b5ad25258a14499_6798844632908427223.jpg",
-    # ]
-    # for img_url in download_list:
-    #     download_img(img_url)
+
+if __name__ == "__main__":
+    main()
