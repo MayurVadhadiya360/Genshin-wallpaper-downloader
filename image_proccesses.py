@@ -104,13 +104,86 @@ def delete_images(target_dir:str, file_names:list[str] = [], exts:list[str] = []
     print(f"<{'':-^63}>")
     print(f"<{'>|Completed|<':-^63}>")
 
+def convert_image(image_path: str, output_dir: str, output_img_ext: str = '.jpeg', log: bool = True) -> bool:
+    """
+    Convert a .webp image to .jpg with the same name.
+    
+    Parameters:
+    webp_path (str): The path to the .webp image file.
+    """
+    try:
+        # Open the .webp image
+        img = Image.open(image_path)
+
+        # Convert the image to RGB mode (JPEG does not support transparency)
+        rgb_img = img.convert('RGB')
+
+        # Get the base name (without extension) and change the extension to .jpeg
+        base_name = os.path.basename(image_path)
+        base_name = os.path.splitext(base_name)[0]
+        output_file = os.path.join(output_dir, base_name) + output_img_ext
+
+        # Save the image with the new extension
+        rgb_img.save(output_file, 'JPEG')
+
+        if log: print(f"Image converted and saved as {output_file}")
+        return True
+    except Exception as e:
+        if log: print(f"Error converting image: {e}")
+        return False
+
+def copy_images(input_dir:str, output_dir:str, exts:list[str] = ['.png', '.jpg', '.jpeg', '.webp'], convert_exts:list[str] = ['.webp'], convert_to:str = '.jpeg', log:bool = True) -> None:
+    print(f"\n<{'>|Started Copying Images|<':-^60}>")
+    print(f"Copying from {input_dir} to {output_dir}")
+    copied = 0
+    skipped = 0
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        if log: print(f"{output_dir} created!")
+    
+    for filename in os.listdir(input_dir):
+        input_path = os.path.join(input_dir, filename)
+        output_path = os.path.join(output_dir, filename)
+
+        # Check if it's a image file
+        if not os.path.isfile(input_path) or os.path.splitext(input_path)[1] not in exts:
+            if log: print(f"Skipped (not a valid image file): {filename}")
+            continue
+
+        # Check if the file already exists in the output directory
+        if os.path.exists(output_path):
+            skipped += 1
+            if log: print(f"Skipped (already exists in output directory): {filename}")
+            continue
+        
+        if os.path.splitext(input_path)[1] in convert_exts:
+            if convert_image(input_path, output_dir, convert_to, log):
+                copied += 1
+                if log: print(f"Copied: {filename}")
+        else:
+            with Image.open(input_path) as img:
+                try:
+                    shutil.copy(input_path, output_dir)
+                    copied += 1
+                    if log: print(f"Copied: {filename}")
+                except Exception as e:
+                    skipped += 1
+                    if log: print(f"Skipped: {filename}, Error: {e}")
+
+    print(f"<{'':-^60}>")
+    print(f"{f'{skipped = }':^30} | {f'{copied = }':^30}")
+    print(f"<{'':-^60}>")
+    print(f"<{'>|Completed|<':-^60}>")
+
+
 def main() -> None:
     wallpaper = "D:/games/WallPaper"
     wallpaper_mobile = "D:/games/WallPaper/mobile"
     wallpaper_mihoyo = "D:/games/WallPaper/MiHoYo"
     wallpaper_output = "D:/projects/Genshin_BG_Downloader/output"
-
     wallpaper_16_9 = "D:/games/WallPaper/wallpaper_16_9"
+    mobile_wallpaper_theme = "D:/games/WallPaper/mobile_mihoyo_processed"
 
     filter_images_by_aspect_ratio(wallpaper_output, wallpaper_mihoyo, (16, 9), log=False)
     filter_images_by_aspect_ratio(wallpaper_mihoyo, wallpaper_16_9, (16, 9), log=False)
@@ -121,6 +194,8 @@ def main() -> None:
             convert_webp_to_jpg(webp)
 
     delete_images(wallpaper_16_9, exts=['.webp'])
+
+    # copy_images(wallpaper_mobile, mobile_wallpaper_theme, log=False)
 
 if __name__ == "__main__":
     main()
