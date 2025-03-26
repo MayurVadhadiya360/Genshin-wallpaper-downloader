@@ -69,8 +69,8 @@ def convert_webp_to_jpg(webp_path: str) -> None:
         # Convert the image to RGB mode (JPEG does not support transparency)
         rgb_img = img.convert('RGB')
 
-        # Get the base name (without extension) and change the extension to .jpg
-        output_file = os.path.splitext(webp_path)[0] + '.jpg'
+        # Get the base name (without extension) and change the extension to .jpeg
+        output_file = os.path.splitext(webp_path)[0] + '.jpeg'
 
         # Save the image with the new extension
         rgb_img.save(output_file, 'JPEG')
