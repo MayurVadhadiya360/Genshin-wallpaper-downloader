@@ -12,22 +12,20 @@ def get_img_name_from_url(img_url:str) -> str:
 
 # Image download history
 def read_img_download_history() -> list[str]:
-    img_downloads = []
     with open('download_history.json', 'r') as f:
         data = json.load(f)
-        img_downloads = data.get("IMG_DOWNLOADS")
+        img_downloads = data.get("IMG_DOWNLOADS", [])
     return img_downloads
 
 def update_img_download_history(img_downloads:list[str]) -> None:
     with open('download_history.json', 'r+') as f:
         data = json.load(f)
 
-        old_imgs = data.get("IMG_DOWNLOADS")
-        old_imgs = set(old_imgs)
-        new_imgs = set(img_downloads)
-        all_imgs = old_imgs.union(new_imgs)
+        old_img_urls: set[str] = set(data.get("IMG_DOWNLOADS", []))
+        new_img_urls = set(img_downloads)
+        all_img_urls = old_img_urls.union(new_img_urls)
 
-        data["IMG_DOWNLOADS"] = list(all_imgs)
+        data["IMG_DOWNLOADS"] = list(all_img_urls)
 
         f.seek(0)
         json.dump(data, f, indent=4)
@@ -175,14 +173,14 @@ def get_hoyo_launcher_bg() -> None:
         traceback.print_exc()
 
 def main() -> None:
-    print(BASE_DIR)
+    # print(BASE_DIR)``
     # 16:9 => 1920x1080, 2560x1440
     download_wallpapers(10, [2560, 1440])
     get_hoyo_launcher_bg()
 
-    for webp in get_webp_files():
-        if not exists_jpg(convert_filename_to_dotjpg(webp)):
-            convert_webp_to_jpg(webp)
+    # for webp in get_webp_files():
+    #     if not exists_jpg(convert_filename_to_dotjpg(webp)):
+    #         convert_webp_to_jpg(webp)
 
 
 if __name__ == "__main__":

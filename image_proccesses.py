@@ -1,17 +1,32 @@
 import os
+import json
 import shutil
 from PIL import Image
 
 from index import convert_filename_to_dotjpg, convert_webp_to_jpg, exists_jpg, get_webp_files
 
+def read_image_exclusion_list() -> list[str]:
+    with open('image_exclusion.json', 'r') as f:
+        json_file = json.load(f)
+        exclusion_list: list[str] = json_file.get("EXCLUDED_IMGS", [])
+    return exclusion_list
+
+
+def is_img_in_excluded_list(img_name:str) -> bool:
+    excluded_list: list[str] = read_image_exclusion_list()
+    return img_name in excluded_list
+    
+
 def filter_images_by_aspect_ratio(input_dir:str, output_dir:str, aspect_ratio:tuple[int,int], exclude_exts:list[str] = ['.webp'], log:bool = True) -> None:
     """
-    Filters images by aspect ratio and copies the matching images to the output directory.
+    Filter images in the input directory by their aspect ratio and copy them to the output directory.
 
-    input_dir: Path to the input directory containing images.
-    output_dir: Path to the output directory to store filtered images.
-    aspect_ratio (tuple): Target aspect ratio as (width, height).
-    exclude_exts (list): List of file extensions to exclude from filtering.
+    Parameters:
+    input_dir (str): The directory containing the images to be filtered.
+    output_dir (str): The directory where the filtered images will be copied.
+    aspect_ratio (tuple[int,int]): The desired aspect ratio (width, height) of the images
+    exclude_exts (list[str], optional): A list of file extensions to exclude. Defaults to ['.webp'].
+    log (bool, optional): Whether to log the filtered images. Defaults to True.
     """
     valid_image_exts = ('.png', '.jpg', '.jpeg', '.webp', '.gif', '.tiff', '.bmp')
 
@@ -37,9 +52,14 @@ def filter_images_by_aspect_ratio(input_dir:str, output_dir:str, aspect_ratio:tu
             if log: print(f"Skipped (not a image file): {filename}")
             continue
 
-        if os.path.splitext(input_path)[1] in exclude_exts:
+        if os.path.splitext(filename)[1] in exclude_exts:
             excluded += 1
             if log: print(f"Skipped (excluded extension): {filename}")
+            continue
+
+        if is_img_in_excluded_list(os.path.splitext(filename)[0]):
+            excluded += 1
+            if log: print(f"Skipped (exclusion list): {filename}")
             continue
 
         # Check if the file already exists in the output directory
@@ -68,6 +88,15 @@ def filter_images_by_aspect_ratio(input_dir:str, output_dir:str, aspect_ratio:tu
 
 
 def delete_images(target_dir:str, file_names:list[str] = [], exts:list[str] = [], log:bool = True) -> None:
+    """
+    Deletes images from the target directory based on the provided file names and extensions.
+
+    Parameters:
+    target_dir (str): The directory from which images will be deleted.
+    file_names (list[str], optional): List of file names to delete. Defaults to [].
+    exts (list[str], optional): List of file extensions to delete. Defaults to [].
+    log (bool, optional): Whether to print log messages. Defaults to True.
+    """
     print(f"\n<{'>|Started Deleting Images|<':-^63}>")
     print(f"Deleting images from {target_dir}")
 
@@ -98,6 +127,8 @@ def delete_images(target_dir:str, file_names:list[str] = [], exts:list[str] = []
                 if log: print(f"Removed: {file_path}")
             except Exception as e:
                 if log: print(f"Error removing {file_path}: {e}")
+    
+    removed = removed_file_names + removed_exts
 
     print(f"<{' Removed Summary ':-^63}>")
     print(f"{ f'{removed_file_names = }':^20} | {f'{removed_exts = }':^20} | {f'{removed = }':^20}")
@@ -106,10 +137,13 @@ def delete_images(target_dir:str, file_names:list[str] = [], exts:list[str] = []
 
 def convert_image(image_path: str, output_dir: str, output_img_ext: str = '.jpeg', log: bool = True) -> bool:
     """
-    Convert a .webp image to .jpg with the same name.
+    Convert a image to desired extension with the same name.
     
     Parameters:
-    webp_path (str): The path to the .webp image file.
+    image_path (str): Path to the image to be converted.
+    output_dir (str): Directory where the converted image will be saved.
+    output_img_ext (str): Desired extension of the output image. Default is '.jpeg'.
+    log (bool): Whether to print the conversion status. Default is True.
     """
     try:
         # Open the .webp image
@@ -133,6 +167,17 @@ def convert_image(image_path: str, output_dir: str, output_img_ext: str = '.jpeg
         return False
 
 def copy_images(input_dir:str, output_dir:str, exts:list[str] = ['.png', '.jpg', '.jpeg', '.webp'], convert_exts:list[str] = ['.webp'], convert_to:str = '.jpeg', log:bool = True) -> None:
+    """
+    Copy images from input directory to output directory, optionally converting .webp images to .jpeg.
+
+    Parameters:
+    input_dir (str): Directory where the images to be copied are located.
+    output_dir (str): Directory where the copied images will be saved.
+    exts (list[str]): List of image extensions to be copied. Default is ['.png', '.jpg', '.jpeg', '.webp'].
+    convert_exts (list[str]): List of image extensions to be converted to .jpeg. Default is ['.webp'].
+    convert_to (str): Desired extension of the output image. Default is '.jpeg'.
+    log (bool): Whether to print the copying status. Default is True.
+    """
     print(f"\n<{'>|Started Copying Images|<':-^60}>")
     print(f"Copying from {input_dir} to {output_dir}")
     copied = 0
@@ -177,6 +222,24 @@ def copy_images(input_dir:str, output_dir:str, exts:list[str] = ['.png', '.jpg',
     print(f"<{'>|Completed|<':-^60}>")
 
 
+def delete_excluded_images(target_dir:str, log:bool = True) -> None:
+    """
+    Deletes images that are not in the target directory.
+
+    Parameters:
+    target_dir (str): The directory to check against.
+    log (bool): Whether to print log messages. Default is True.
+    """
+    excluded_list = read_image_exclusion_list()
+
+    file_names = list(map(lambda x: x + '.jpg', excluded_list))
+    delete_images(target_dir=target_dir, file_names=file_names, log=log)
+
+    file_names = list(map(lambda x: x + '.jpeg', excluded_list))
+    delete_images(target_dir=target_dir, file_names=file_names, log=log)
+    
+
+
 def main() -> None:
     wallpaper = "D:/games/WallPaper"
     wallpaper_mobile = "D:/games/WallPaper/mobile"
@@ -185,6 +248,7 @@ def main() -> None:
     wallpaper_16_9 = "D:/games/WallPaper/wallpaper_16_9"
     mobile_wallpaper_theme = "D:/games/WallPaper/mobile_mihoyo_processed"
 
+    # 16:9 => 1920x1080, 2560x1440
     filter_images_by_aspect_ratio(wallpaper_output, wallpaper_mihoyo, (16, 9), log=False)
     filter_images_by_aspect_ratio(wallpaper_mihoyo, wallpaper_16_9, (16, 9), log=False)
     filter_images_by_aspect_ratio(wallpaper, wallpaper_16_9, (16, 9), log=False)
@@ -193,7 +257,8 @@ def main() -> None:
         if not exists_jpg(convert_filename_to_dotjpg(webp)):
             convert_webp_to_jpg(webp)
 
-    delete_images(wallpaper_16_9, exts=['.webp'])
+    # delete_images(wallpaper_16_9, exts=['.webp'])
+    # delete_excluded_images(target_dir=wallpaper_mihoyo)
 
     # copy_images(wallpaper_mobile, mobile_wallpaper_theme, log=False)
 
