@@ -20,6 +20,12 @@ def update_daily_post_history(todays_url: str) -> None:
         json.dump(data, f, indent=4)
         f.truncate()
 
+def read_excluded_image() -> list[str]:
+    with open('image_exclusion.json', 'r') as f:
+        data = json.load(f)
+        image_urls = data.get("EXCLUDED_IMGS", [])
+    return image_urls
+
 def main():
     # Load download_history.json
     # Get the list of links
@@ -29,10 +35,12 @@ def main():
         return
     
     links_used = read_daily_post_history()
+    link_names_excluded = read_excluded_image()
+    links_excluded = list(map(lambda x: x + '.jpg', link_names_excluded)) + list(map(lambda x: x + '.webp', link_names_excluded))
 
     # Randomly select one link
     selected_link = random.choice(links)
-    while selected_link in links_used:
+    while selected_link in links_used or selected_link.split('/')[-1] in links_excluded:
         selected_link = random.choice(links)
 
     print(f"Today's wallpaper is: {selected_link}")
