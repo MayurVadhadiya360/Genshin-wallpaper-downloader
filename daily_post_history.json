@@ -1,12 +1,31 @@
 {
     "IMAGE_URLS": [
-        "https://launcher-webstatic.mihoyo.com/launcher-public/2024/08/06/75e2a2043d8f806b70c62253f4ec2b8c_6873471051191642730.webp",
-        "https://act-webstatic.mihoyo.com/event-static/2024/03/29/e2f3c400ac84beaf6bf75d8e592d0a26_1544544773639738633.jpg",
-        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/002a33fe16e31fb7fd7a0d85ee15bb6e_1590896211248842681.jpg",
-        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/7dc2db8ab2436b148a13179db41d4397_1216896779236681532.jpg",
-        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/594edf838e1b79a0ce61d6e6eb5580c2_5908386076376775099.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/c2bb19d6a3df8aab32a116f076c81eb3_4228618465942990720.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/67ddcef127db967d04c48aeb4100022f_3550776641700211858.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/0128149d785d0bc0e8941c39a41e9231_7568874064799989602.jpg",
         "https://act-webstatic.mihoyo.com/event-static/2023/08/15/25ad65a8c7fdd30239acad70cd3a2082_1105324496600019091.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2024/03/29/e2f3c400ac84beaf6bf75d8e592d0a26_1544544773639738633.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/8b46ef87800f91ffa22b05ef252b4705_4833461526307863813.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/31d9fb87bcf967b0c1a8e465aa959e4a_6574243514512883576.png",
+        "https://act-webstatic.mihoyo.com/event-static/2024/11/01/78ff51ddf93586aee6176341daa89da7_7296623106765685114.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/11/29/4eaf0ad17048a51c7a9cd8097aab1129_7732497335568544903.jpg",
         "https://act-webstatic.mihoyo.com/event-static/2023/08/16/81fa42bf8f0018a65ba4dd259248d677_2496614610629762151.jpg",
-        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/31d9fb87bcf967b0c1a8e465aa959e4a_6574243514512883576.png"
+        "https://fastcdn.hoyoverse.com/mi18n/hk4e_global/m20240919hy3a2wv5z4/upload/147dc91ecef4228acd468a7735ef0097_1481687738078891782.png",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/dfce672d03a2c5ad408ada90c7eb28eb_1268760382219283571.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2024/09/19/3017887cd4b1eb60f82ce1ef22bfce65_7779602061737440938.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/594edf838e1b79a0ce61d6e6eb5580c2_5908386076376775099.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/11/29/b39c454c71b0eaba9f2f9814a922cbfb_7605696218298454868.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/e64224b52fb6e5c49f675622dd058f18_4876470292434779116.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/7dc2db8ab2436b148a13179db41d4397_1216896779236681532.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/ed3d1f09826a7540bb77efecccaab073_3492034073659974506.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/10423636d7c47e68481a5422d94fb183_7252788657768025509.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/c9cb871916dfe925d1b64ac718e05748_4485569105501870517.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/b7eb0e0b97249f86dea91609f1fa0f70_7346477266347718127.jpg",
+        "https://launcher-webstatic.mihoyo.com/launcher-public/2024/08/06/75e2a2043d8f806b70c62253f4ec2b8c_6873471051191642730.webp",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/536ec46d7ec4216867b10667e356fefb_3508569460684903582.png",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/2131fca22982569501af049f0fe39610_8479687993876475700.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/114e3af8d0d92cf735a781ee91c97797_2475206271052408437.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/002a33fe16e31fb7fd7a0d85ee15bb6e_1590896211248842681.jpg",
+        "https://act-webstatic.mihoyo.com/event-static/2023/08/15/139096ff6002bd7bc20f2875aacac6a4_6097356673437979207.jpg"
     ]
 }
