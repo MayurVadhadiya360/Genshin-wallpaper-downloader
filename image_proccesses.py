@@ -166,16 +166,16 @@ def convert_image(image_path: str, output_dir: str, output_img_ext: str = '.jpeg
         if log: print(f"Error converting image: {e}")
         return False
 
-def copy_images(input_dir:str, output_dir:str, exts:list[str] = ['.png', '.jpg', '.jpeg', '.webp'], convert_exts:list[str] = ['.webp'], convert_to:str = '.jpeg', log:bool = True) -> None:
+def copy_images(input_dir:str, output_dir:str, valid_img_exts:list[str] = ['.png', '.jpg', '.jpeg', '.webp'], convert_exts:list[str] = ['.webp'], convert_to:str = '.jpeg', log:bool = True) -> None:
     """
     Copy images from input directory to output directory, optionally converting .webp images to .jpeg.
 
     Parameters:
     input_dir (str): Directory where the images to be copied are located.
     output_dir (str): Directory where the copied images will be saved.
-    exts (list[str]): List of image extensions to be copied. Default is ['.png', '.jpg', '.jpeg', '.webp'].
-    convert_exts (list[str]): List of image extensions to be converted to .jpeg. Default is ['.webp'].
-    convert_to (str): Desired extension of the output image. Default is '.jpeg'.
+    valid_img_exts (list[str]): List of valid image extensions. Default is ['.png', '.jpg', '.jpeg', '.webp'].
+    convert_exts (list[str]): List of image extensions to be converted to .x (value of convert_to). Default is ['.webp'].
+    convert_to (str): Desired extension (.x) of the output image. Default is '.jpeg'.
     log (bool): Whether to print the copying status. Default is True.
     """
     print(f"\n<{'>|Started Copying Images|<':-^60}>")
@@ -192,7 +192,7 @@ def copy_images(input_dir:str, output_dir:str, exts:list[str] = ['.png', '.jpg',
         output_path = os.path.join(output_dir, filename)
 
         # Check if it's a image file
-        if not os.path.isfile(input_path) or os.path.splitext(input_path)[1] not in exts:
+        if not os.path.isfile(input_path) or os.path.splitext(input_path)[1] not in valid_img_exts:
             if log: print(f"Skipped (not a valid image file): {filename}")
             continue
 
@@ -218,7 +218,76 @@ def copy_images(input_dir:str, output_dir:str, exts:list[str] = ['.png', '.jpg',
 
     print(f"<{'':-^60}>")
     print(f"{f'{skipped = }':^30} | {f'{copied = }':^30}")
-    print(f"<{'':-^60}>")
+    print(f"<{'>|Completed|<':-^60}>")
+
+
+def classify_images(input_dir:str, landscape_output_dir:str, portrait_output_dir:str, valid_img_exts:list[str] = ['.png', '.jpg', '.jpeg', '.webp'], log:bool = True):
+    """
+    Classify images by their aspect ratio and copy them to separate directories. i.e., landscape and portrait images.
+
+    Parameters:
+    input_dir (str): Directory where the images to be classified are located.
+    landscape_output_dir (str): Directory where the all landscape images will be saved.
+    portrait_output_dir (str): Directory where the all portrait images will be saved.
+    valid_img_exts (list[str]): List of valid image extensions. Default is ['.png', '.jpg', '.jpeg', '.webp'].
+    """
+    print(f"\n<{'>|Started Filtering Images|<':-^60}>")
+    print(f"Landscape Images: {landscape_output_dir}")
+    print(f"Portrait Images: {portrait_output_dir}")
+    landscape_images = 0
+    portrait_images = 0
+
+    if not os.path.exists(landscape_output_dir):
+        os.makedirs(landscape_output_dir)
+        if log: print(f"{landscape_output_dir} created!")
+    
+    if not os.path.exists(portrait_output_dir):
+        os.makedirs(portrait_output_dir)
+        if log: print(f"{portrait_output_dir} created!")
+
+    for filename in os.listdir(input_dir):
+        image_path = os.path.join(input_dir, filename)
+        landscape_output_path = os.path.join(landscape_output_dir, filename)
+        portrait_output_path = os.path.join(portrait_output_dir, filename)
+
+        # Check if it's a image file
+        if not os.path.isfile(image_path) or os.path.splitext(image_path)[1] not in valid_img_exts:
+            if log: print(f"Skipped (not a valid image file): {filename}")
+            continue
+
+        # Check if the file already exists in the output directory
+        if os.path.exists(portrait_output_path):
+            if log: print(f"Skipped (already exists in portrait output directory): {filename}, Directory: {portrait_output_path}")
+            continue
+
+        with Image.open(image_path) as img:
+            width, height = img.size
+            img_ratio = width / height
+
+            try:
+                if img_ratio > 1.5:
+                    # Check if the file already exists in the output directory
+                    if os.path.exists(landscape_output_path):
+                        if log: print(f"Skipped (already exists in landscape output directory): {filename}, Directory: {landscape_output_path}")
+                        continue
+
+                    if log: print(f"Copied (landscape): {filename}")
+                    shutil.copy(image_path, landscape_output_dir)
+                    landscape_images += 1
+                else:
+                    # Check if the file already exists in the output directory
+                    if os.path.exists(portrait_output_path):
+                        if log: print(f"Skipped (already exists in portrait output directory): {filename}, Directory: {portrait_output_path}")
+                        continue
+
+                    if log: print(f"Copied (portrait): {filename}")
+                    shutil.copy(image_path, portrait_output_dir)
+                    portrait_images += 1
+            except Exception as e:
+                if log: print(f"Error processing image: {filename}. Error: {str(e)}")
+
+    print(f"<{'Copied':-^60}>")
+    print(f"{f'{landscape_images = }':^30} | {f'{portrait_images = }':^30}")
     print(f"<{'>|Completed|<':-^60}>")
 
 
@@ -247,25 +316,29 @@ def main() -> None:
     wallpaper_output = "D:/projects/Genshin_BG_Downloader/output"
     wallpaper_16_9 = "D:/games/WallPaper/wallpaper_16_9"
     mobile_wallpaper_theme = "D:/games/WallPaper/mobile_mihoyo_processed"
+    wallpaper_mobile_p = "D:/games/WallPaper/mobile_p"
+    wallpaper_mobile_l = "D:/games/WallPaper/mobile_l"
 
-    # 16:9 => 1920x1080, 2560x1440
-    filter_images_by_aspect_ratio(input_dir=wallpaper_output, output_dir=wallpaper_mihoyo, aspect_ratio=(16, 9), exclude_exts=[], log=False)
-    for webp in get_webp_files(wallpaper_mihoyo):
-        if not exists_jpg(convert_filename_to_dotjpg(webp)):
-            convert_webp_to_jpg(webp)
-    delete_images(wallpaper_mihoyo, exts=['.webp'], log=False)
 
-    filter_images_by_aspect_ratio(input_dir=wallpaper_mihoyo, output_dir=wallpaper_16_9, aspect_ratio=(16, 9), log=False)
-    filter_images_by_aspect_ratio(input_dir=wallpaper, output_dir=wallpaper_16_9, aspect_ratio=(16, 9), log=False)
+    ### 16:9 => 1920x1080, 2560x1440
+    # filter_images_by_aspect_ratio(input_dir=wallpaper_output, output_dir=wallpaper_mihoyo, aspect_ratio=(16, 9), exclude_exts=[], log=False)
+    # for webp in get_webp_files(wallpaper_mihoyo):
+    #     if not exists_jpg(convert_filename_to_dotjpg(webp)):
+    #         convert_webp_to_jpg(webp)
+    # delete_images(wallpaper_mihoyo, exts=['.webp'], log=False)
 
-    for webp in get_webp_files(wallpaper_16_9):
-        if not exists_jpg(convert_filename_to_dotjpg(webp)):
-            convert_webp_to_jpg(webp)
+    # filter_images_by_aspect_ratio(input_dir=wallpaper_mihoyo, output_dir=wallpaper_16_9, aspect_ratio=(16, 9), log=False)
+    # filter_images_by_aspect_ratio(input_dir=wallpaper, output_dir=wallpaper_16_9, aspect_ratio=(16, 9), log=False)
 
-    delete_images(wallpaper_16_9, exts=['.webp'], log=False)
-    # delete_excluded_images(target_dir=wallpaper_mihoyo)
+    # for webp in get_webp_files(wallpaper_16_9):
+    #     if not exists_jpg(convert_filename_to_dotjpg(webp)):
+    #         convert_webp_to_jpg(webp)
+    # delete_images(wallpaper_16_9, exts=['.webp'], log=False)
+    # # delete_excluded_images(target_dir=wallpaper_mihoyo)
 
-    # copy_images(wallpaper_mobile, mobile_wallpaper_theme, log=False)
+    classify_images(wallpaper_mobile, wallpaper_mobile_l, wallpaper_mobile_p, log=False)
+
+    # copy_images(wallpaper_mobile_p, mobile_wallpaper_theme, log=False)
 
 if __name__ == "__main__":
     main()
