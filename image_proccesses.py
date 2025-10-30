@@ -321,22 +321,22 @@ def main() -> None:
 
 
     ### 16:9 => 1920x1080, 2560x1440
-    # filter_images_by_aspect_ratio(input_dir=wallpaper_output, output_dir=wallpaper_mihoyo, aspect_ratio=(16, 9), exclude_exts=[], log=False)
-    # for webp in get_webp_files(wallpaper_mihoyo):
-    #     if not exists_jpg(convert_filename_to_dotjpg(webp)):
-    #         convert_webp_to_jpg(webp)
-    # delete_images(wallpaper_mihoyo, exts=['.webp'], log=False)
+    filter_images_by_aspect_ratio(input_dir=wallpaper_output, output_dir=wallpaper_mihoyo, aspect_ratio=(16, 9), exclude_exts=[], log=False)
+    for webp in get_webp_files(wallpaper_mihoyo):
+        if not exists_jpg(convert_filename_to_dotjpg(webp)):
+            convert_webp_to_jpg(webp)
+    delete_images(wallpaper_mihoyo, exts=['.webp'], log=False)
 
-    # filter_images_by_aspect_ratio(input_dir=wallpaper_mihoyo, output_dir=wallpaper_16_9, aspect_ratio=(16, 9), log=False)
-    # filter_images_by_aspect_ratio(input_dir=wallpaper, output_dir=wallpaper_16_9, aspect_ratio=(16, 9), log=False)
+    filter_images_by_aspect_ratio(input_dir=wallpaper_mihoyo, output_dir=wallpaper_16_9, aspect_ratio=(16, 9), log=False)
+    filter_images_by_aspect_ratio(input_dir=wallpaper, output_dir=wallpaper_16_9, aspect_ratio=(16, 9), log=False)
 
-    # for webp in get_webp_files(wallpaper_16_9):
-    #     if not exists_jpg(convert_filename_to_dotjpg(webp)):
-    #         convert_webp_to_jpg(webp)
-    # delete_images(wallpaper_16_9, exts=['.webp'], log=False)
-    # # delete_excluded_images(target_dir=wallpaper_mihoyo)
+    for webp in get_webp_files(wallpaper_16_9):
+        if not exists_jpg(convert_filename_to_dotjpg(webp)):
+            convert_webp_to_jpg(webp)
+    delete_images(wallpaper_16_9, exts=['.webp'], log=False)
+    # delete_excluded_images(target_dir=wallpaper_mihoyo)
 
-    classify_images(wallpaper_mobile, wallpaper_mobile_l, wallpaper_mobile_p, log=False)
+    # classify_images(wallpaper_mobile, wallpaper_mobile_l, wallpaper_mobile_p, log=False)
 
     # copy_images(wallpaper_mobile_p, mobile_wallpaper_theme, log=False)
 

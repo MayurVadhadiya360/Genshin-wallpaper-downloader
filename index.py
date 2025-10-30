@@ -31,6 +31,27 @@ def update_img_download_history(img_downloads:list[str]) -> None:
         json.dump(data, f, indent=4)
         f.truncate()
 
+# Video download history
+def read_vid_download_history() -> list[str]:
+    with open('download_history.json', 'r') as f:
+        data = json.load(f)
+        vid_downloads = data.get("VID_DOWNLOADS", [])
+    return vid_downloads
+
+def update_vid_download_history(vid_downloads:list[str]) -> None:
+    with open('download_history.json', 'r+') as f:
+        data = json.load(f)
+
+        old_vid_urls: set[str] = set(data.get("VID_DOWNLOADS", []))
+        new_vid_urls = set(vid_downloads)
+        all_vid_urls = old_vid_urls.union(new_vid_urls)
+
+        data["VID_DOWNLOADS"] = list(all_vid_urls)
+
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
+
 # Image file methods
 def get_webp_files(directory: str|None = None) -> list[str]:
     """
@@ -106,6 +127,29 @@ def download_img(img_url:str, output:str|None=None) -> bool:
     print("-----")
     return download_success
 
+# Download video(live wallpaper)
+def download_vid(vid_url:str, output:str|None=None) -> bool:
+    download_success = False
+    if not output: output = os.path.join(BASE_DIR, 'video')
+    vid_downloads = read_vid_download_history()
+    if vid_url not in vid_downloads:
+        img_name = get_img_name_from_url(vid_url)
+        with open(os.path.join(output, img_name), 'wb') as f:
+            try:
+                conn = httpx.get(vid_url)
+                f.write(conn.content)
+                vid_downloads.append(vid_url)
+                update_vid_download_history(vid_downloads)
+                download_success = True
+            except Exception as e:
+                download_success = False
+                traceback.print_exc()
+    else:
+        download_success = False
+        print("Video already downloaded!")
+    print("-----")
+    return download_success
+
 def download_wallpapers(count:int, resolution:list[int, int]) -> None:
     """
     Downloads wallpaper images for genshin
@@ -153,9 +197,10 @@ def get_hoyo_launcher_bg() -> None:
         data = httpx.get(url1).json()
         data = data["data"]["games"]
         for game in data:
-            print(f"Downloading BG from {game['display']['name']}...")
             background_url = game["display"]["background"]["url"]
-            download_img(background_url)
+            if background_url:
+                print(f"Downloading BG from {game['display']['name']}...")
+                download_img(background_url)
     except Exception as e:
         traceback.print_exc()
 
@@ -166,9 +211,17 @@ def get_hoyo_launcher_bg() -> None:
         for game in data:
             background_list = game["backgrounds"]
             for bg in background_list:
-                print(f"Downloading BG from gameid:{game['game']['id']} bgid:{bg['id']}...")
                 background_url = bg["background"]["url"]
-                download_img(background_url)
+                if background_url:
+                    print(f"Downloading BG from gameid:{game['game']['id']} bgid:{bg['id']}...")
+                    print(f"\tDownloading wallpaper: {background_url}")
+                    download_img(background_url)
+
+                vid_url = bg["video"]["url"]
+                if vid_url:
+                    print(f"Downloading BG from gameid:{game['game']['id']} bgid:{bg['id']}...")
+                    print(f"\tDownloading video (live wallpaper): {vid_url}")
+                    download_vid(vid_url)
     except Exception as e:
         traceback.print_exc()
 
