@@ -26,14 +26,16 @@ def read_excluded_image() -> list[str]:
         image_urls = data.get("EXCLUDED_IMGS", [])
     return image_urls
 
-def main():
-    # Load download_history.json
-    # Get the list of links
+def select_daily_post():
+    """
+    Select a daily wallpaper post interactively.
+    Returns the selected link or None.
+    """
     links = read_img_download_history()
     if not links:
         print("No links found in download_history.json")
-        return
-    
+        return None
+
     links_used = read_daily_post_history()
     link_names_excluded = read_excluded_image()
     links_excluded = list(map(lambda x: x + '.jpg', link_names_excluded)) + list(map(lambda x: x + '.webp', link_names_excluded))
@@ -47,9 +49,9 @@ def main():
 
     confirm = input("Confirm today's wallpaper? y/n: ").lower()
     if confirm == 'y':
-        # Save the selected link to post_history.json
         update_daily_post_history(selected_link)
         print("Saved!")
-
-if __name__ == "__main__":
-    main()
+        return selected_link
+    else:
+        print("Not saved.")
+        return None

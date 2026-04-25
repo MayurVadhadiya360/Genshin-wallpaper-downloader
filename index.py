@@ -225,16 +225,14 @@ def get_hoyo_launcher_bg() -> None:
     except Exception as e:
         traceback.print_exc()
 
-def main() -> None:
-    # print(BASE_DIR)``
-    # 16:9 => 1920x1080, 2560x1440
-    download_wallpapers(10, [2560, 1440])
+def run_download_wallpapers(count=10, resolution=[2560, 1440]):
+    """
+    Download wallpapers interactively or with parameters.
+    """
+    download_wallpapers(count, resolution)
+
+def run_get_hoyo_launcher_bg():
+    """
+    Download Hoyoverse launcher backgrounds.
+    """
     get_hoyo_launcher_bg()
-
-    # for webp in get_webp_files():
-    #     if not exists_jpg(convert_filename_to_dotjpg(webp)):
-    #         convert_webp_to_jpg(webp)
-
-
-if __name__ == "__main__":
-    main()

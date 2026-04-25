@@ -309,18 +309,10 @@ def delete_excluded_images(target_dir:str, log:bool = True) -> None:
     
 
 
-def main() -> None:
-    wallpaper = "D:/games/WallPaper"
-    wallpaper_mobile = "D:/games/WallPaper/mobile"
-    wallpaper_mihoyo = "D:/games/WallPaper/MiHoYo"
-    wallpaper_output = "D:/projects/Genshin_BG_Downloader/output"
-    wallpaper_16_9 = "D:/games/WallPaper/wallpaper_16_9"
-    mobile_wallpaper_theme = "D:/games/WallPaper/mobile_mihoyo_processed"
-    wallpaper_mobile_p = "D:/games/WallPaper/mobile_p"
-    wallpaper_mobile_l = "D:/games/WallPaper/mobile_l"
-
-
-    ### 16:9 => 1920x1080, 2560x1440
+def process_wallpapers_16_9(wallpaper_output, wallpaper_mihoyo, wallpaper_16_9, wallpaper):
+    """
+    Process wallpapers for 16:9 aspect ratio.
+    """
     filter_images_by_aspect_ratio(input_dir=wallpaper_output, output_dir=wallpaper_mihoyo, aspect_ratio=(16, 9), exclude_exts=[], log=False)
     for webp in get_webp_files(wallpaper_mihoyo):
         if not exists_jpg(convert_filename_to_dotjpg(webp)):
@@ -334,12 +326,22 @@ def main() -> None:
         if not exists_jpg(convert_filename_to_dotjpg(webp)):
             convert_webp_to_jpg(webp)
     delete_images(wallpaper_16_9, exts=['.webp'], log=False)
-    # delete_excluded_images(target_dir=wallpaper_mihoyo)
 
-    # classify_images(wallpaper_mobile, wallpaper_mobile_l, wallpaper_mobile_p, log=False)
+def classify_mobile_wallpapers(wallpaper_mobile, wallpaper_mobile_l, wallpaper_mobile_p, log=False):
+    """
+    Classify mobile wallpapers into landscape and portrait.
+    """
+    classify_images(wallpaper_mobile, wallpaper_mobile_l, wallpaper_mobile_p, log=log)
 
-    # copy_images(wallpaper_mobile_p, mobile_wallpaper_theme, log=False)
+def copy_mobile_wallpapers(wallpaper_mobile_p, mobile_wallpaper_theme, log=False):
+    """
+    Copy mobile portrait wallpapers to theme directory.
+    """
+    copy_images(wallpaper_mobile_p, mobile_wallpaper_theme, log=log)
 
-if __name__ == "__main__":
-    main()
+def delete_excluded_wallpapers(wallpaper_mihoyo, log=False):
+    """
+    Delete excluded wallpapers from directory.
+    """
+    delete_excluded_images(target_dir=wallpaper_mihoyo, log=log)
 
